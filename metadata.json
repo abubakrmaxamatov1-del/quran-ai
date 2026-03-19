@@ -1,0 +1,5 @@
+{
+  "name": "Quran Al-Kareem",
+  "description": "Quran verses with translations and tafsir, integrated with Supabase and Google Auth.",
+  "requestFramePermissions": []
+}
