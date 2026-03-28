@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Plus_Jakarta_Sans } from 'next/font/google';
+// import { Plus_Jakarta_Sans } from 'next/font/google';
 
 interface WelcomeScreenProps {
   onGoogleEnter: () => void;
@@ -9,11 +9,11 @@ interface WelcomeScreenProps {
   loadingProvider?: 'google' | 'telegram' | null;
 }
 
-const plusJakarta = Plus_Jakarta_Sans({ subsets: ['latin'] });
+// const plusJakarta = Plus_Jakarta_Sans({ subsets: ['latin'] });
 
 export default function WelcomeScreen({ onGoogleEnter, onTelegramEnter, loadingProvider = null }: WelcomeScreenProps) {
   return (
-    <div className={`fixed inset-0 z-[9999] overflow-hidden bg-[#f0f4f1] px-6 py-10 ${plusJakarta.className}`}>
+    <div className="fixed inset-0 z-[9999] overflow-hidden bg-[#f0f4f1] px-6 py-10">
       <div className="mx-auto flex min-h-[100dvh] w-full max-w-sm flex-col items-center justify-center gap-8">
         <header className="w-full text-center">
           <h1 className="text-gradient text-3xl font-bold tracking-tight">Muallim Abu Bakr</h1>
