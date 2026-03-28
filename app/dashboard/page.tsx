@@ -15,7 +15,8 @@ export default function DashboardPage() {
   const [infoLoading, setInfoLoading] = useState(true);
 
   useEffect(() => {
-    if (!user?.id) {
+    const userId = user?.id;
+    if (!userId) {
       setInfoLoading(false);
       return;
     }
@@ -23,7 +24,7 @@ export default function DashboardPage() {
     // Fetch user registration info from Supabase
     async function fetchUserInfo() {
       try {
-        const response = await fetch(`/api/telegram/user/${user.id}`);
+        const response = await fetch(`/api/telegram/user/${userId}`);
         if (response.ok) {
           const data = await response.json();
           setUserInfo(data);
