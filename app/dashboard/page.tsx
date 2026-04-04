@@ -23,8 +23,9 @@ export default function DashboardPage() {
 
     // Fetch user registration info from Supabase
     async function fetchUserInfo() {
+      if (!user) return;
       try {
-        const response = await fetch(`/api/telegram/user/${userId}`);
+        const response = await fetch(`/api/telegram/user/${user.id}`);
         if (response.ok) {
           const data = await response.json();
           setUserInfo(data);
