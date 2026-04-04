@@ -15,17 +15,17 @@ export default function DashboardPage() {
   const [infoLoading, setInfoLoading] = useState(true);
 
   useEffect(() => {
-    const userId = user?.id;
-    if (!userId) {
+    if (!user) {
       setInfoLoading(false);
       return;
     }
 
+    const userId = user.id;
+
     // Fetch user registration info from Supabase
     async function fetchUserInfo() {
-      if (!user) return;
       try {
-        const response = await fetch(`/api/telegram/user/${user.id}`);
+        const response = await fetch(`/api/telegram/user/${userId}`);
         if (response.ok) {
           const data = await response.json();
           setUserInfo(data);
@@ -38,7 +38,7 @@ export default function DashboardPage() {
     }
 
     fetchUserInfo();
-  }, [user?.id]);
+  }, [user]);
 
   if (isLoading || infoLoading) {
     return (
