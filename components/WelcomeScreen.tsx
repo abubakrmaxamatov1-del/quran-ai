@@ -72,7 +72,7 @@ export default function WelcomeScreen({ onGoogleEnter, onTelegramEnter, loadingP
           <button
             onClick={onGoogleEnter}
             disabled={loadingProvider !== null}
-            className="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-2xl border border-slate-200/80 bg-white/80 px-6 py-4 shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-slate-300 hover:bg-white hover:shadow-md active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="group relative flex w-full cursor-pointer items-center justify-center gap-3 overflow-hidden rounded-2xl border border-slate-200/80 bg-white/80 px-6 py-4 shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-slate-300 hover:bg-white hover:shadow-md active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -97,7 +97,7 @@ export default function WelcomeScreen({ onGoogleEnter, onTelegramEnter, loadingP
           <button
             onClick={onTelegramEnter}
             disabled={loadingProvider !== null}
-            className="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-r from-[#1a3a2a] via-[#234d38] to-[#1a3a2a] px-6 py-4 text-white shadow-lg shadow-emerald-900/20 transition-all duration-300 hover:shadow-xl hover:shadow-emerald-900/30 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="group relative flex w-full cursor-pointer items-center justify-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-r from-[#1a3a2a] via-[#234d38] to-[#1a3a2a] px-6 py-4 text-white shadow-lg shadow-emerald-900/20 transition-all duration-300 hover:shadow-xl hover:shadow-emerald-900/30 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {/* Subtle shine effect */}
             <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
@@ -117,21 +117,6 @@ export default function WelcomeScreen({ onGoogleEnter, onTelegramEnter, loadingP
               ) : 'Telegram orqali kirish'}
             </span>
           </button>
-
-          {/* Divider */}
-          <div className="flex items-center gap-3 py-2">
-            <div className="h-px flex-1 bg-slate-200" />
-            <span className="text-xs text-slate-400">yoki</span>
-            <div className="h-px flex-1 bg-slate-200" />
-          </div>
-
-          {/* Registration link */}
-          <p className="text-center text-sm text-slate-500">
-            Hisobingiz yo&apos;qmi?{' '}
-            <button className="font-semibold text-emerald-700 hover:text-emerald-800 transition-colors">
-              Ro&apos;yxatdan o&apos;tish
-            </button>
-          </p>
         </footer>
       </div>
     </div>
