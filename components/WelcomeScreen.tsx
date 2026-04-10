@@ -23,13 +23,9 @@ export default function WelcomeScreen({ onGoogleEnter, onTelegramEnter, loadingP
 
         {/* Header */}
         <header className="w-full text-center">
-          <div className="inline-flex items-center gap-2">
-            <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            <span className="text-xs font-medium uppercase tracking-widest text-emerald-700/70">
-              Quran Al-Kareem
-            </span>
-            <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-[#1a3a2a]">
+            Muallim Abu Bakr
+          </h1>
         </header>
 
         {/* Main Section */}
@@ -54,9 +50,6 @@ export default function WelcomeScreen({ onGoogleEnter, onTelegramEnter, loadingP
 
           {/* Title and description */}
           <div className="space-y-2 text-center">
-            <h1 className="text-2xl font-bold tracking-tight text-[#1a3a2a]">
-              Muallim Abu Bakr
-            </h1>
             <h2 className="text-lg font-semibold text-emerald-700">
               Assalomu alaykum!
             </h2>
