@@ -10,19 +10,19 @@ interface WelcomeScreenProps {
 
 export default function WelcomeScreen({ onGoogleEnter, onTelegramEnter, loadingProvider = null }: WelcomeScreenProps) {
   return (
-    <div className="fixed inset-0 z-[9999] overflow-hidden bg-gradient-to-b from-[#f0fdf4] via-white to-[#ecfdf5]">
+    <div className="fixed inset-0 z-[9999] overflow-y-auto bg-gradient-to-b from-[#f0fdf4] via-white to-[#ecfdf5]">
       {/* Decorative background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-20%] right-[-15%] w-[50%] h-[50%] bg-emerald-200/30 rounded-full blur-[100px]" />
         <div className="absolute bottom-[-10%] left-[-15%] w-[40%] h-[40%] bg-emerald-100/40 rounded-full blur-[80px]" />
         <div className="absolute top-[40%] left-[50%] -translate-x-1/2 w-[30%] h-[30%] bg-green-200/20 rounded-full blur-[60px]" />
       </div>
 
       {/* Main content */}
-      <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-md flex-col items-center justify-between px-6 py-8">
+      <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-md flex-col items-center px-6 py-6">
         
         {/* Header */}
-        <header className="w-full pt-4 text-center">
+        <header className="w-full text-center">
           <div className="inline-flex items-center gap-2">
             <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
             <span className="text-xs font-medium uppercase tracking-widest text-emerald-700/70">
@@ -33,33 +33,31 @@ export default function WelcomeScreen({ onGoogleEnter, onTelegramEnter, loadingP
         </header>
 
         {/* Main Section */}
-        <main className="flex w-full flex-1 flex-col items-center justify-center gap-6 py-6">
+        <main className="flex w-full flex-col items-center gap-4 py-4">
           {/* Logo with enhanced styling */}
           <div className="relative flex items-center justify-center">
             {/* Outer glow ring */}
-            <div className="absolute h-52 w-52 rounded-full bg-gradient-to-br from-emerald-200/50 to-green-100/30 blur-2xl" />
+            <div className="absolute h-44 w-44 rounded-full bg-gradient-to-br from-emerald-200/50 to-green-100/30 blur-2xl" />
             {/* Inner subtle ring */}
-            <div className="absolute h-40 w-40 rounded-full border border-emerald-200/50" />
+            <div className="absolute h-36 w-36 rounded-full border border-emerald-200/50" />
             
             {/* Logo image with float animation */}
             <div className="relative z-10 animate-float">
-              <div className="relative">
-                <img
-                  src="/welcome_img.png"
-                  alt="Muallim Abu Bakr Logo"
-                  className="h-48 w-48 object-contain drop-shadow-xl"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
+              <img
+                src="/welcome_img.png"
+                alt="Muallim Abu Bakr Logo"
+                className="h-40 w-40 object-contain drop-shadow-xl"
+                referrerPolicy="no-referrer"
+              />
             </div>
           </div>
 
           {/* Title and description */}
-          <div className="space-y-3 text-center">
-            <h1 className="text-3xl font-bold tracking-tight text-[#1a3a2a]">
+          <div className="space-y-2 text-center">
+            <h1 className="text-2xl font-bold tracking-tight text-[#1a3a2a]">
               Muallim Abu Bakr
             </h1>
-            <h2 className="text-xl font-semibold text-emerald-700">
+            <h2 className="text-lg font-semibold text-emerald-700">
               Assalomu alaykum!
             </h2>
             <p className="mx-auto max-w-xs text-sm leading-relaxed text-slate-500">
@@ -69,7 +67,7 @@ export default function WelcomeScreen({ onGoogleEnter, onTelegramEnter, loadingP
         </main>
 
         {/* Footer with buttons */}
-        <footer className="w-full space-y-3 pb-6">
+        <footer className="w-full space-y-3 pb-8 mt-auto">
           {/* Google Button */}
           <button
             onClick={onGoogleEnter}
