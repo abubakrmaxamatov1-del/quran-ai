@@ -146,8 +146,8 @@ export default function HomePage() {
       }
 
       const botUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'muallimabubakr_ilova_bot';
-      const botUrl = `https://t.me/${botUsername}?startapp=home`;
-      window.open(botUrl, '_blank', 'noopener,noreferrer');
+      const botUrl = `https://t.me/${botUsername}`;
+      window.location.href = botUrl;
     } catch (error) {
       console.error('Telegram entry failed:', error);
     } finally {
