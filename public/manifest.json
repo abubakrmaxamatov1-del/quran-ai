@@ -1,0 +1,23 @@
+{
+  "name": "Muallim Abu Bakr",
+  "short_name": "Muallim",
+  "description": "Islomiy bilimlar va oson qiroat markazi - Quran Al-Kareem",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f0fdf4",
+  "theme_color": "#1a3a2a",
+  "icons": [
+    {
+      "src": "/welcome_img.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/welcome_img.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
