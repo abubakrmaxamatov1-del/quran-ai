@@ -2,16 +2,5 @@
   "buildCommand": "next build",
   "devCommand": "next dev",
   "installCommand": "npm install",
-  "framework": "nextjs",
-  "env": {
-    "NEXT_PUBLIC_SUPABASE_URL": "@next_public_supabase_url",
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@next_public_supabase_anon_key",
-    "NEXT_PUBLIC_GEMINI_API_KEY": "@next_public_gemini_api_key",
-    "NEXT_PUBLIC_TELEGRAM_BOT_USERNAME": "@next_public_telegram_bot_username",
-    "NEXT_PUBLIC_SITE_URL": "@next_public_site_url",
-    "SUPABASE_SERVICE_ROLE_KEY": "@supabase_service_role_key",
-    "TELEGRAM_BOT_TOKEN": "@telegram_bot_token",
-    "TELEGRAM_WEBAPP_URL": "@telegram_webapp_url",
-    "TELEGRAM_USERS_TABLE": "@telegram_users_table"
-  }
+  "framework": "nextjs"
 }
