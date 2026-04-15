@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import WelcomeScreen from '@/components/WelcomeScreen';
 import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 interface Surah {
   id: number;
@@ -177,16 +178,16 @@ export default function HomePage() {
       {loading ? (
         <div className="space-y-3">
           {[...Array(7)].map((_, i) => (
-            <div key={i} className="rounded-[20px] border border-white/60 bg-white/40 p-4">
+            <div key={i} className="rounded-[20px] border border-white/60 dark:border-slate-800/60 bg-white/40 dark:bg-slate-900/40 p-4">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <Skeleton circle width={32} height={32} baseColor="#e6ece9" highlightColor="#f5f8f6" />
+                  <Skeleton circle width={32} height={32} />
                   <div className="space-y-2">
-                    <Skeleton width={120} height={12} baseColor="#e6ece9" highlightColor="#f5f8f6" />
-                    <Skeleton width={170} height={10} baseColor="#e6ece9" highlightColor="#f5f8f6" />
+                    <Skeleton width={120} height={12} />
+                    <Skeleton width={170} height={10} />
                   </div>
                 </div>
-                <Skeleton width={56} height={16} baseColor="#e6ece9" highlightColor="#f5f8f6" />
+                <Skeleton width={56} height={16} />
               </div>
             </div>
           ))}
@@ -198,10 +199,10 @@ export default function HomePage() {
           >
             <Link 
               href={`/surah/${surah.number}`}
-              className="flex items-center gap-4 px-4 min-h-[72px] py-3 justify-between bg-white/60 backdrop-blur-lg border border-white/80 rounded-[20px] shadow-sm cursor-pointer hover:bg-white/80 transition-all active:scale-[0.98]"
+              className="flex items-center gap-4 px-4 min-h-[72px] py-3 justify-between bg-white/60 dark:bg-slate-900/60 backdrop-blur-lg border border-white/80 dark:border-slate-800/80 rounded-[20px] shadow-sm cursor-pointer hover:bg-white/80 dark:hover:bg-slate-800/80 transition-all active:scale-[0.98]"
             >
               <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center size-8 rounded-full bg-gradient-to-br from-emerald-600 to-black text-white font-bold text-sm shadow-md border border-white/20">
+                <div className="flex items-center justify-center size-8 rounded-full bg-gradient-to-br from-emerald-600 to-green-900 dark:from-emerald-400 dark:to-emerald-200 text-white font-bold text-sm shadow-md border border-white/20 dark:border-slate-700/20">
                   {surah.number}
                 </div>
                 <div className="flex flex-col justify-center">
@@ -209,7 +210,7 @@ export default function HomePage() {
                     {surah.englishName}
                   </p>
                   <div className="flex items-center gap-2 mt-1">
-                    <p className="text-slate-500 text-xs font-medium leading-none">
+                    <p className="text-slate-500 dark:text-slate-400 text-xs font-medium leading-none">
                       {surah.englishNameTranslation} • {surah.numberOfAyahs} Oyat
                     </p>
                   </div>

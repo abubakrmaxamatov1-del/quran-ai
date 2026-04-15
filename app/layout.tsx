@@ -29,6 +29,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
                 const useDark = savedTheme ? savedTheme === 'dark' : prefersDark;
                 document.documentElement.classList.toggle('dark', useDark);
+                
+                // Update meta theme color
+                const themeColor = useDark ? '#020617' : '#f0fdf4';
+                const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+                if (metaThemeColor) metaThemeColor.setAttribute('content', themeColor);
               } catch (e) {}
             })();`
           }}
