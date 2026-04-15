@@ -54,7 +54,7 @@ export async function POST(req: Request) {
       } else {
         // New user or incomplete registration
         if (!user) {
-          await supabase.from('telegram_users').insert([{
+          const { error: insError } = await supabase.from('telegram_users').insert([{
             telegram_id: tgId,
             username: from.username || null,
             telegram_first_name: from.first_name || null,
@@ -62,11 +62,13 @@ export async function POST(req: Request) {
             full_name: '[PENDING_NAME]',
             phone_number: '[PENDING_PHONE]'
           }]);
+          if (insError) throw new Error(`Insert failed: ${insError.message}`);
         } else {
-          await supabase.from('telegram_users').update({
+          const { error: updError } = await supabase.from('telegram_users').update({
             full_name: '[PENDING_NAME]',
             phone_number: '[PENDING_PHONE]'
           }).eq('telegram_id', tgId);
+          if (updError) throw new Error(`Update pending state failed: ${updError.message}`);
         }
         await sendMessage(chatId, "Assalomu alaykum!\nIltimos, ro'yxatdan o'tish uchun ismingizni kiriting:", {
           remove_keyboard: true
@@ -104,9 +106,11 @@ export async function POST(req: Request) {
           return NextResponse.json({ ok: true });
         }
         
-        await supabase.from('telegram_users').update({
+        const { error: nameError } = await supabase.from('telegram_users').update({
           full_name: name
         }).eq('telegram_id', tgId);
+
+        if (nameError) throw new Error(`Name update failed: ${nameError.message}`);
 
         await sendMessage(chatId, `Rahmat, ${name}!\nEndi telefon raqamingizni yuborish uchun pastdagi tugmani bosing:`, {
           keyboard: [[{ text: "📱 Telefon raqamni yuborish", request_contact: true }]],
