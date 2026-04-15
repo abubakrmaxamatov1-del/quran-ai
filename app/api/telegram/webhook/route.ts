@@ -16,8 +16,10 @@ export async function GET() {
     status: 'online',
     env: {
       has_bot_token: !!BOT_TOKEN,
-      has_supabase_url: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+      bot_token_prefix: BOT_TOKEN ? BOT_TOKEN.substring(0, 5) : null,
+      supabase_url: process.env.NEXT_PUBLIC_SUPABASE_URL,
       has_service_key: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+      service_key_prefix: process.env.SUPABASE_SERVICE_ROLE_KEY ? process.env.SUPABASE_SERVICE_ROLE_KEY.substring(0, 10) : null,
       site_url: process.env.NEXT_PUBLIC_SITE_URL || 'not_set'
     }
   });
