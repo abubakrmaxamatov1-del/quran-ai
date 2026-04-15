@@ -16,14 +16,17 @@ const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || '
 const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
 export async function GET() {
+  const { data: dbCheck, error: dbError } = await supabase.from('surahs').select('count', { count: 'exact', head: true }).limit(1);
+  
   return NextResponse.json({
     status: 'online',
+    database: dbError ? 'error' : 'connected',
+    db_error: dbError?.message,
     env: {
       has_bot_token: !!BOT_TOKEN,
-      bot_token_prefix: BOT_TOKEN ? BOT_TOKEN.substring(0, 5) : null,
+      has_gemini_key: !!process.env.NEXT_PUBLIC_GEMINI_API_KEY,
       supabase_url: process.env.NEXT_PUBLIC_SUPABASE_URL,
       has_service_key: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-      service_key_prefix: process.env.SUPABASE_SERVICE_ROLE_KEY ? process.env.SUPABASE_SERVICE_ROLE_KEY.substring(0, 10) : null,
       site_url: process.env.NEXT_PUBLIC_SITE_URL || 'not_set'
     }
   });
@@ -128,12 +131,19 @@ export async function POST(req: Request) {
       URL: supabaseUrl
     });
 
-    // Fetch user from database
-    const { data: user } = await supabase
+    // Fetch user from database - more resilient approach
+    console.log(`[Telegram Webhook] Fetching user: ${tgId}`);
+    const { data: users, error: userError } = await supabase
       .from('telegram_users')
       .select('*')
       .eq('telegram_id', tgId)
-      .single();
+      .limit(1);
+
+    if (userError) {
+      console.error('[Telegram Webhook] DB Query Error:', userError);
+    }
+    
+    const user = users && users.length > 0 ? users[0] : null;
 
     if (message.text === '/start') {
       const firstName = from?.first_name || 'aziz foydalanuvchi';
