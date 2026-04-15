@@ -59,7 +59,7 @@ function escapeHTML(text: string): string {
 async function getVerseFromDB(sura: number, aya: number) {
   const { data, error } = await supabase
     .from('quran_mansour')
-    .select('arabic_text, translation')
+    .select('arabic_text, translation, footnotes')
     .eq('sura_number', sura)
     .eq('aya_number', aya)
     .single();
@@ -68,19 +68,30 @@ async function getVerseFromDB(sura: number, aya: number) {
   return data;
 }
 
-function formatVerse(sura: number, aya: number, arabic: string, translation: string) {
+function formatVerse(sura: number, aya: number, arabic: string, translation: string, footnotes?: string) {
   // Use HTML tags for bold and code
-  return `\n\n<b>${sura}-sura, ${aya}-oyat:</b>\n\n<code>${arabic}</code>\n\n${escapeHTML(translation)}\n\n`;
+  let text = `\n\n<b>${sura}-sura, ${aya}-oyat:</b>\n\n<code>${arabic}</code>\n\n<b>Ma'nosi:</b> ${escapeHTML(translation)}`;
+  
+  if (footnotes && footnotes !== 'NULL' && footnotes.trim() !== '') {
+    text += `\n\n<b>Tafsir:</b> <i>${escapeHTML(footnotes)}</i>`;
+  }
+  
+  text += `\n\n`;
+  return text;
 }
 
 async function generateAIResponse(userId: string, userMessage: string) {
   const systemPrompt = `Siz "Muallim Abu Bakr" botining aqlli va muloyim yordamchisisiz. 
-Maqsadingiz: Foydalanuvchilarga Qur'on oyatlari, ularning tarjimalari va islomiy mavzularda aniq va manfaatli ma'lumot berish.
-Qoidalar:
-1. Javoblarni faqat o'zbek tilida bering.
-2. Agar biror oyat haqida gapirsangiz yoki foydalanuvchi so'rasa, uni [GET_VERSE:sura:oyat] formatida yozing.
-3. Javobingiz mazmunli va foydali bo'lsin.
-Masalan: "Baqara surasining 255-oyati haqida ma'lumot bering" desa, javob ichida [GET_VERSE:2:255] bo'lishi shart.`;
+Maqsadingiz: Foydalanuvchilarga Qur'on oyatlari bo'yicha aniq ma'lumot berish.
+
+MUHIM QOIDALAR:
+1. O'z fikringizdan kelib chiqib "hukm" (fatvo) bermang va oyatlarni o'zingizcha sharhlamang.
+2. Savolga javob berishda doimo Qur'on oyatlariga tayanishingiz kerak.
+3. Biror oyatni keltirmoqchi bo'lsangiz, uni FAQAT [GET_VERSE:sura:oyat] ko'rinishida yozing. 
+4. Tizim avtomatik ravishda ushbu tagni bazadagi rasmiy tarjima va tafsir bilan almashtiradi.
+5. Foydalanuvchiga doimo muloyim bo'ling va javoblarni faqat o'zbek tilida bering.
+
+Sizning vazifangiz - mustaqil olim bo'lish emas, balki foydalanuvchini bazadagi rasmiy manbalarga yo'naltiruvchi yo'lboshchi bo'lishdir.`;
 
   const result = await model.generateContent([systemPrompt, userMessage]);
   let responseText = result.response.text();
@@ -98,7 +109,7 @@ Masalan: "Baqara surasining 255-oyati haqida ma'lumot bering" desa, javob ichida
     const verseData = await getVerseFromDB(sura, aya);
     
     if (verseData) {
-      const formattedVerse = formatVerse(sura, aya, verseData.arabic_text, verseData.translation);
+      const formattedVerse = formatVerse(sura, aya, verseData.arabic_text, verseData.translation, verseData.footnotes);
       responseText = responseText.replace(match[0], formattedVerse);
     } else {
       responseText = responseText.replace(match[0], `\n\n(Oyat topilmadi: ${sura}:${aya})\n\n`);
