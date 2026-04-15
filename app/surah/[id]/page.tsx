@@ -104,24 +104,32 @@ export default function SurahPage({ params }: { params: Promise<{ id: string }> 
 
   return (
     <div className="min-h-screen bg-zinc-50 pb-20">
-      {/* Surah Header */}
-      <div className="sticky top-16 z-40 border-b border-white/50 bg-white/40 backdrop-blur-xl py-4">
-        <div className="container mx-auto flex items-center justify-between px-4 max-w-[480px]">
-          <Link href="/" className="flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-primary transition-colors">
-            <ChevronLeft size={20} />
-            <span className="text-sm font-medium">Orqaga</span>
+      {/* Unified Surah Header */}
+      <header className="sticky top-0 z-50 w-full bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border-b border-white/50 dark:border-slate-800/50 shadow-sm">
+        <div className="container mx-auto flex h-16 items-center justify-between px-4 max-w-[480px]">
+          <Link 
+            href="/" 
+            className="flex size-11 items-center justify-center bg-white/70 dark:bg-slate-800/70 backdrop-blur-md rounded-2xl border border-white/60 dark:border-slate-700/60 shadow-sm text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+          >
+            <span className="material-symbols-outlined text-2xl">arrow_back</span>
           </Link>
-          <div className="text-center">
-            <h1 className="text-lg font-bold text-emerald-gradient">{surah?.englishName || 'Sura'}</h1>
-            <p className="text-[10px] text-slate-500 font-medium">{surah?.englishNameTranslation} • {surah?.numberOfAyahs} oyat</p>
+          
+          <div className="flex-1 ml-4 overflow-hidden">
+            <h1 className="text-lg font-bold leading-tight truncate text-emerald-gradient">
+              {surah?.englishName || 'Sura'}
+            </h1>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate">
+              {surah?.englishNameTranslation} • {surah?.numberOfAyahs} oyat
+            </p>
           </div>
-          <div className="flex items-center gap-3">
-            <button className="rounded-full p-2 text-slate-400 hover:bg-white/60 hover:text-primary transition-all">
-              <Share2 size={18} />
+
+          <div className="flex items-center justify-end">
+            <button className="flex size-11 cursor-pointer items-center justify-center overflow-hidden rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-md text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors border border-white/60 dark:border-slate-700/60 shadow-sm">
+              <span className="material-symbols-outlined text-2xl">share</span>
             </button>
           </div>
         </div>
-      </div>
+      </header>
 
       <div className="container mx-auto mt-8 px-4 max-w-[480px]">
         {loading ? (

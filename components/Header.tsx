@@ -8,7 +8,7 @@ import { usePathname } from 'next/navigation';
 export default function Header() {
   const pathname = usePathname();
   
-  if (pathname === '/search' || pathname === '/profile') return null;
+  if (pathname === '/search' || pathname === '/profile' || pathname.startsWith('/surah/')) return null;
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border-b border-white/50 dark:border-slate-800/50 shadow-sm">
