@@ -202,7 +202,7 @@ export default function HomePage() {
               className="flex items-center gap-4 px-4 min-h-[72px] py-3 justify-between bg-white/60 dark:bg-slate-900/60 backdrop-blur-lg border border-white/80 dark:border-slate-800/80 rounded-[20px] shadow-sm cursor-pointer hover:bg-white/80 dark:hover:bg-slate-800/80 transition-all active:scale-[0.98]"
             >
               <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center size-8 rounded-full bg-gradient-to-br from-emerald-600 to-green-900 dark:from-emerald-400 dark:to-emerald-200 text-white font-bold text-sm shadow-md border border-white/20 dark:border-slate-700/20">
+                <div className="flex items-center justify-center size-8 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-400 dark:from-emerald-400 dark:to-emerald-300 text-white font-bold text-sm shadow-md border border-white/20">
                   {surah.number}
                 </div>
                 <div className="flex flex-col justify-center">
@@ -210,14 +210,14 @@ export default function HomePage() {
                     {surah.englishName}
                   </p>
                   <div className="flex items-center gap-2 mt-1">
-                    <p className="text-slate-500 dark:text-slate-400 text-xs font-medium leading-none">
+                    <p className="text-slate-500 dark:text-slate-300 text-xs font-medium leading-none">
                       {surah.englishNameTranslation} • {surah.numberOfAyahs} Oyat
                     </p>
                   </div>
                 </div>
               </div>
               <div className="shrink-0 text-right">
-                <p className="text-xl font-quran text-emerald-gradient font-medium drop-shadow-sm">
+                <p className="text-xl font-quran text-emerald-gradient font-medium drop-shadow-sm opacity-90">
                   {surah.name}
                 </p>
               </div>

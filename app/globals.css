@@ -1,33 +1,33 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f0fdf4;
-  --foreground: #1e293b;
-  --primary: #00C853;
-  --primary-light: #69F0AE;
-  --primary-dark: #00A343;
-  --deep-green: #1a3a2a;
-  --glass-bg: rgba(255, 255, 255, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.8);
-  --glass-shadow: rgba(0, 0, 0, 0.05);
-  --emerald-gradient-start: #00C853;
-  --emerald-gradient-end: #1a3a2a;
+  --background: #f8fafc; /* neutral-50 */
+  --foreground: #0f172a; /* slate-900 */
+  --primary: #10b981;    /* emerald-500 */
+  --primary-light: #34d399; /* emerald-400 */
+  --primary-dark: #059669;  /* emerald-600 */
+  --deep-green: #064e3b;    /* emerald-950 (for accents) */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.9);
+  --glass-shadow: rgba(0, 0, 0, 0.03);
+  --emerald-gradient-start: #10b981; /* emerald-500 */
+  --emerald-gradient-end: #34d399;   /* emerald-400 */
   --skeleton-base: #e6ece9;
   --skeleton-highlight: #f5f8f6;
 }
 
 html.dark {
-  --background: #020617;
-  --foreground: #f8fafc;
-  --primary: #22c55e;
-  --primary-light: #4ade80;
-  --primary-dark: #16a34a;
-  --deep-green: #d1fae5;
-  --glass-bg: rgba(15, 23, 42, 0.6);
-  --glass-border: rgba(148, 163, 184, 0.2);
-  --glass-shadow: rgba(0, 0, 0, 0.4);
-  --emerald-gradient-start: #4ade80;
-  --emerald-gradient-end: #f8fafc;
+  --background: #020617; /* slate-950 */
+  --foreground: #f8fafc; /* slate-50 */
+  --primary: #10b981;    /* emerald-500 */
+  --primary-light: #6ee7b7; /* emerald-300 */
+  --primary-dark: #059669;  /* emerald-600 */
+  --deep-green: #ecfdf5;    /* emerald-50 (for high contrast accents) */
+  --glass-bg: rgba(15, 23, 42, 0.7);
+  --glass-border: rgba(51, 65, 85, 0.3);
+  --glass-shadow: rgba(0, 0, 0, 0.5);
+  --emerald-gradient-start: #34d399; /* emerald-400 */
+  --emerald-gradient-end: #6ee7b7;   /* emerald-300 */
   --skeleton-base: #1e293b;
   --skeleton-highlight: #334155;
 }
