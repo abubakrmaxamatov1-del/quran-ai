@@ -19,7 +19,7 @@ export default function BottomNav() {
         {/* Home */}
         <Link href="/" className="flex flex-col items-center justify-center gap-1.5 w-16 transition-all hover:-translate-y-1 pb-1">
           <div className={`flex items-center justify-center size-8 rounded-full shadow-inner border transition-all ${isActive('/') ? 'bg-emerald-100/50 dark:bg-emerald-900/30 border-white/60 dark:border-slate-700/60' : 'bg-white/40 dark:bg-slate-800/40 border-white/60 dark:border-slate-700/60'}`}>
-            <span className={`material-symbols-outlined text-[22px] bg-clip-text text-transparent bg-gradient-to-br from-green-600 to-green-900 dark:from-green-400 dark:to-emerald-200`}>
+            <span className={`material-symbols-outlined text-[20px] bg-clip-text text-transparent bg-gradient-to-br from-green-600 to-green-900 dark:from-green-400 dark:to-emerald-200`}>
               home
             </span>
           </div>
@@ -52,7 +52,7 @@ export default function BottomNav() {
         {/* Settings */}
         <Link href="/profile" className="flex flex-col items-center justify-center gap-1.5 w-16 transition-all hover:-translate-y-1 pb-1">
           <div className={`flex items-center justify-center size-8 rounded-full shadow-inner border transition-all ${isActive('/profile') ? 'bg-emerald-100/50 dark:bg-emerald-900/30 border-white/60 dark:border-slate-700/60' : 'bg-white/40 dark:bg-slate-800/40 border-white/60 dark:border-slate-700/60'}`}>
-            <span className="material-symbols-outlined text-[22px] bg-clip-text text-transparent bg-gradient-to-br from-green-600 to-green-900 dark:from-green-400 dark:to-emerald-200">
+            <span className="material-symbols-outlined text-[20px] bg-clip-text text-transparent bg-gradient-to-br from-green-600 to-green-900 dark:from-green-400 dark:to-emerald-200">
               settings
             </span>
           </div>

@@ -37,11 +37,20 @@ export default function HomePage() {
   useEffect(() => {
     const bootstrapAuthState = async () => {
       try {
+        // If user already passed welcome screen in this session, skip it
+        const alreadyOnboarded = sessionStorage.getItem('quran_onboarded');
+        if (alreadyOnboarded === 'true') {
+          setShowWelcome(false);
+          return;
+        }
+
         const tgUser = (window as any)?.Telegram?.WebApp?.initDataUnsafe?.user;
         if (tgUser) {
           setIsTelegramApp(true);
+          // Mark as onboarded right away so back-navigation skips WelcomeScreen
+          sessionStorage.setItem('quran_onboarded', 'true');
           setShowWelcome(true);
-          // Wait 2.5 seconds to show the motivation UI before jumping in
+          // Show motivation UI for 2.5s only on first entry
           setTimeout(() => {
             setShowWelcome(false);
           }, 2500);
@@ -50,6 +59,7 @@ export default function HomePage() {
 
         const { data } = await supabase.auth.getSession();
         if (data.session) {
+          sessionStorage.setItem('quran_onboarded', 'true');
           setShowWelcome(false);
           return;
         }

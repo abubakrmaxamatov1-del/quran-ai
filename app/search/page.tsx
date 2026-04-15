@@ -324,7 +324,7 @@ export default function SearchPage() {
         <div className="max-w-[480px] mx-auto w-full flex items-center justify-between p-4">
           <button 
             onClick={() => router.back()}
-            className="flex items-center justify-center size-10 rounded-full hover:bg-white/50 transition-colors"
+            className="flex items-center justify-center size-9 rounded-full hover:bg-white/50 transition-colors"
           >
             <ChevronLeft size={24} className="text-slate-700" />
           </button>
@@ -336,7 +336,7 @@ export default function SearchPage() {
           <div className="relative">
             <button 
               onClick={() => setShowHistory(true)}
-              className="flex items-center justify-center size-10 rounded-full hover:bg-white/50 transition-colors"
+              className="flex items-center justify-center size-9 rounded-full hover:bg-white/50 transition-colors"
             >
               <Clock size={20} className="text-slate-700" />
             </button>
@@ -501,7 +501,7 @@ export default function SearchPage() {
               disabled={(!input.trim() && !isRecording) || isAnalyzing}
               className={`flex items-center justify-center size-10 rounded-full shadow-md transition-all shrink-0 ${
                 (input.trim() || isRecording) && !isAnalyzing
-                  ? 'bg-gradient-to-br from-green-600 to-black hover:brightness-110 active:scale-95'
+                  ? 'bg-gradient-to-br from-emerald-500 to-emerald-700 hover:brightness-110 active:scale-95'
                   : 'bg-slate-200 text-slate-400 cursor-not-allowed'
               }`}
             >
@@ -550,7 +550,7 @@ export default function SearchPage() {
                   value={searchHistoryQuery}
                   onChange={(e) => setSearchHistoryQuery(e.target.value)}
                   placeholder="Tarixdan qidirish..."
-                  className="w-full h-10 pl-10 pr-4 rounded-xl bg-slate-50 border-none text-sm focus:ring-2 focus:ring-primary/20"
+                  className="w-full h-10 pl-10 pr-4 rounded-xl bg-slate-50 border-none text-sm focus:outline-none focus:ring-0"
                 />
               </div>
             </div>
