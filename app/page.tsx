@@ -23,6 +23,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [showWelcome, setShowWelcome] = useState(true);
   const [authLoading, setAuthLoading] = useState<'google' | 'telegram' | null>(null);
+  const [isTelegramApp, setIsTelegramApp] = useState(false);
 
   useEffect(() => {
     document.body.setAttribute('data-welcome-active', showWelcome ? 'true' : 'false');
@@ -37,7 +38,12 @@ export default function HomePage() {
       try {
         const tgUser = (window as any)?.Telegram?.WebApp?.initDataUnsafe?.user;
         if (tgUser) {
-          setShowWelcome(false);
+          setIsTelegramApp(true);
+          setShowWelcome(true);
+          // Wait 2.5 seconds to show the motivation UI before jumping in
+          setTimeout(() => {
+            setShowWelcome(false);
+          }, 2500);
           return;
         }
 
@@ -161,6 +167,7 @@ export default function HomePage() {
         onGoogleEnter={handleGoogleEnter}
         onTelegramEnter={handleTelegramEnter}
         loadingProvider={authLoading}
+        isTelegramApp={isTelegramApp}
       />
     );
   }
