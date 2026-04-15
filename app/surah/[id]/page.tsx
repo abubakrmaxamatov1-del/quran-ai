@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, use } from 'react';
+import { useRouter } from 'next/navigation';
 import { ChevronLeft, BookOpen, Share2, Play, Info } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
@@ -28,6 +29,7 @@ const ENABLE_SUPABASE_READS = process.env.NEXT_PUBLIC_ENABLE_SUPABASE_READS === 
 
 export default function SurahPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
+  const router = useRouter();
   const [ayats, setAyats] = useState<Ayat[]>([]);
   const [surah, setSurah] = useState<SurahInfo | null>(null);
   const [loading, setLoading] = useState(true);
@@ -101,6 +103,22 @@ export default function SurahPage({ params }: { params: Promise<{ id: string }> 
 
     fetchData();
   }, [id]);
+
+  // Scroll to specific ayat after data loads (for AI search deep links)
+  useEffect(() => {
+    if (!loading && ayats.length > 0) {
+      const hash = window.location.hash;
+      if (hash.startsWith('#ayat-')) {
+        const ayatNumber = hash.replace('#ayat-', '');
+        const target = document.getElementById(`ayat-${ayatNumber}`);
+        if (target) {
+          setTimeout(() => {
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 300);
+        }
+      }
+    }
+  }, [loading, ayats]);
 
   return (
     <div className="min-h-screen bg-zinc-50 pb-20">
