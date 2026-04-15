@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -10,6 +10,18 @@ const WEBAPP_URL =
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder_key';
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+export async function GET() {
+  return NextResponse.json({
+    status: 'online',
+    env: {
+      has_bot_token: !!BOT_TOKEN,
+      has_supabase_url: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+      has_service_key: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+      site_url: process.env.NEXT_PUBLIC_SITE_URL || 'not_set'
+    }
+  });
+}
 
 async function sendMessage(chatId: number, text: string, replyMarkup?: any) {
   if (!BOT_TOKEN) return;
@@ -34,7 +46,18 @@ export async function POST(req: Request) {
     const from = message.from;
     const tgId = from?.id;
 
-    if (!tgId) return NextResponse.json({ ok: true });
+    if (!tgId) {
+      console.log('[Telegram Webhook] No tgId found in message');
+      return NextResponse.json({ ok: true });
+    }
+
+    // DEBUG: Log presence of keys (without values)
+    console.log('[Telegram Webhook] Env check:', {
+      HAS_BOT_TOKEN: !!BOT_TOKEN,
+      HAS_SUPABASE_URL: !!supabaseUrl,
+      HAS_SERVICE_KEY: !!supabaseServiceKey,
+      URL: supabaseUrl
+    });
 
     // Fetch user from database
     const { data: user } = await supabase
@@ -121,8 +144,13 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ ok: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error('[Telegram Webhook Error]', error);
-    return NextResponse.json({ ok: false, error: 'Server error' }, { status: 500 });
+    return NextResponse.json({ 
+      ok: false, 
+      error: 'Server error', 
+      message: error?.message || String(error),
+      stack: process.env.NODE_ENV === 'development' ? error?.stack : undefined
+    }, { status: 500 });
   }
 }
