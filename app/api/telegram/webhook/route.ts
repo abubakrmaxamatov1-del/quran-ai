@@ -68,7 +68,7 @@ export async function POST(req: Request) {
             phone_number: '[PENDING_PHONE]'
           }).eq('telegram_id', tgId);
         }
-        await sendMessage(chatId, "Assalomu alaykum!\nIltimos, ro'yxatdan o'tish uchun to'liq ism-sharifingizni kiriting:", {
+        await sendMessage(chatId, "Assalomu alaykum!\nIltimos, ro'yxatdan o'tish uchun ismingizni kiriting:", {
           remove_keyboard: true
         });
       }
