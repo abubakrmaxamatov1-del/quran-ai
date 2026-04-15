@@ -37,15 +37,20 @@ async function sendMessage(chatId: number, text: string, replyMarkup?: any) {
     body: JSON.stringify({
       chat_id: chatId,
       text: text,
-      parse_mode: 'MarkdownV2',
+      parse_mode: 'HTML',
       ...(replyMarkup ? { reply_markup: replyMarkup } : {})
     }),
   });
 }
 
-// Helper to escape MarkdownV2 special characters
-function escapeMarkdown(text: string): string {
-  return text.replace(/[_*[\]()~`>#+\-=|{}.!]/g, '\\$&');
+// Helper to escape HTML special characters
+function escapeHTML(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
 
 async function getVerseFromDB(sura: number, aya: number) {
@@ -61,26 +66,27 @@ async function getVerseFromDB(sura: number, aya: number) {
 }
 
 function formatVerse(sura: number, aya: number, arabic: string, translation: string) {
-  // Use RLM (Right-to-Left Mark) \u200f for Arabic text
-  const rlm = "\u200f";
-  return `\n\n*${sura}\\-sura, ${aya}\\-oyat:*\n\n${rlm}\`${arabic}\`\n\n${escapeMarkdown(translation)}\n\n`;
+  // Use HTML tags for bold and code
+  return `\n\n<b>${sura}-sura, ${aya}-oyat:</b>\n\n<code>${arabic}</code>\n\n${escapeHTML(translation)}\n\n`;
 }
 
 async function generateAIResponse(userId: string, userMessage: string) {
-  const systemPrompt = `Siz "Muallim Abu Bakr" botining aqlli yordamchisisiz. 
-Siz foydalanuvchilarga Qur'on oyatlari, tafsir va islomiy savollar bo'yicha yordam berasiz.
-Agar foydalanuvchi ma'lum bir oyatni so'rasa yoki savolga javob berishda oyat kerak bo'lsa, uni quyidagi formatda keltiring: [GET_VERSE:sura:oyat]. 
-Masalan: Baqara surasi 255-oyat haqida so'rashsa, [GET_VERSE:2:255] deb javob ichida yozing.
-Javoblaringizni o'zbek tilida, muloyim va foydali ko'rinishda bering.`;
+  const systemPrompt = `Siz "Muallim Abu Bakr" botining aqlli va muloyim yordamchisisiz. 
+Maqsadingiz: Foydalanuvchilarga Qur'on oyatlari, ularning tarjimalari va islomiy mavzularda aniq va manfaatli ma'lumot berish.
+Qoidalar:
+1. Javoblarni faqat o'zbek tilida bering.
+2. Agar biror oyat haqida gapirsangiz yoki foydalanuvchi so'rasa, uni [GET_VERSE:sura:oyat] formatida yozing.
+3. Javobingiz mazmunli va foydali bo'lsin.
+Masalan: "Baqara surasining 255-oyati haqida ma'lumot bering" desa, javob ichida [GET_VERSE:2:255] bo'lishi shart.`;
 
   const result = await model.generateContent([systemPrompt, userMessage]);
   let responseText = result.response.text();
 
   // Escape the AI text BEFORE inserting pre-formatted verse blocks
-  responseText = escapeMarkdown(responseText);
+  responseText = escapeHTML(responseText);
 
   // Find and replace verse tags with actual data from DB
-  const verseRegex = /\\\[GET\\_VERSE:(\d+):(\d+)\\\]/g; // Regex adjusted for escaped text
+  const verseRegex = /\[GET_VERSE:(\d+):(\d+)\]/g;
   const matches = [...responseText.matchAll(verseRegex)];
   
   for (const match of matches) {
@@ -92,7 +98,7 @@ Javoblaringizni o'zbek tilida, muloyim va foydali ko'rinishda bering.`;
       const formattedVerse = formatVerse(sura, aya, verseData.arabic_text, verseData.translation);
       responseText = responseText.replace(match[0], formattedVerse);
     } else {
-      responseText = responseText.replace(match[0], `\n\n\\(Oyat topilmadi: ${sura}:${aya}\\)\n\n`);
+      responseText = responseText.replace(match[0], `\n\n(Oyat topilmadi: ${sura}:${aya})\n\n`);
     }
   }
 
@@ -134,7 +140,7 @@ export async function POST(req: Request) {
       
       if (user && user.full_name !== '[PENDING_NAME]' && user.phone_number !== '[PENDING_PHONE]') {
         // Fully registered logic
-        await sendMessage(chatId, `Assalomu alaykum, ${firstName}! ✨\n\nQur'on o'qish, tinglash va tafsir qilish maqsadida yaratilgan "Muallim Abu Bakr" ilovasiga xush kelibsiz.\n\nIlovaga kirish uchun quyidagi tugmani bosing:`, {
+        await sendMessage(chatId, `Assalomu alaykum, <b>${escapeHTML(firstName)}</b>! ✨\n\nQur'on o'qish, tinglash va tafsir qilish maqsadida yaratilgan "Muallim Abu Bakr" ilovasiga xush kelibsiz.\n\nIlovaga kirish uchun quyidagi tugmani bosing:`, {
           inline_keyboard: [[{ text: "🚀 Muallim Ilovaga kirish", web_app: { url: WEBAPP_URL } }]]
         });
       } else {
@@ -188,7 +194,7 @@ export async function POST(req: Request) {
         const name = message.text.trim();
         // Validation limits
         if (name.length < 2 || name.length > 50 || name.includes('http') || name.includes('/')) {
-          await sendMessage(chatId, escapeMarkdown("Iltimos, haqiqiy ismingizni kiriting (2-50 harf oralig'ida)."));
+          await sendMessage(chatId, escapeHTML("Iltimos, haqiqiy ismingizni kiriting (2-50 harf oralig'ida)."));
           return NextResponse.json({ ok: true });
         }
         
@@ -198,7 +204,7 @@ export async function POST(req: Request) {
 
         if (nameError) throw new Error(`Name update failed: ${nameError.message}`);
 
-        await sendMessage(chatId, `Rahmat, ${escapeMarkdown(name)}!\nEndi telefon raqamingizni yuborish uchun pastdagi tugmani bosing:`, {
+        await sendMessage(chatId, `Rahmat, <b>${escapeHTML(name)}</b>!\n\nEndi telefon raqamingizni yuborish uchun pastdagi tugmani bosing:`, {
           keyboard: [[{ text: "📱 Telefon raqamni yuborish", request_contact: true }]],
           resize_keyboard: true,
           one_time_keyboard: true
