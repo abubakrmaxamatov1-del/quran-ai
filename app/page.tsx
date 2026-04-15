@@ -211,7 +211,7 @@ export default function HomePage() {
                   </p>
                   <div className="flex items-center gap-2 mt-1">
                     <p className="text-slate-500 dark:text-slate-300 text-xs font-medium leading-none">
-                      {surah.englishNameTranslation} • {surah.numberOfAyahs} Oyat
+                      {surah.numberOfAyahs} Oyat
                     </p>
                   </div>
                 </div>

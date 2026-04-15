@@ -119,7 +119,7 @@ export default function SurahPage({ params }: { params: Promise<{ id: string }> 
               {surah?.englishName || 'Sura'}
             </h1>
             <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate">
-              {surah?.englishNameTranslation} • {surah?.numberOfAyahs} oyat
+              {surah?.numberOfAyahs} oyat
             </p>
           </div>
 
