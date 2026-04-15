@@ -482,7 +482,7 @@ export default function SearchPage() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                className="w-full bg-transparent border-none focus:ring-0 text-sm text-slate-800 placeholder-slate-400 px-2 py-2" 
+                className="w-full bg-transparent border-none outline-none focus:outline-none focus:ring-0 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 px-2 py-2" 
                 placeholder="Xabar yozing..." 
               />
             )}

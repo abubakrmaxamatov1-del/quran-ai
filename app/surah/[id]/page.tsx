@@ -166,7 +166,8 @@ export default function SurahPage({ params }: { params: Promise<{ id: string }> 
             {ayats.map((ayat) => (
               <div 
                 key={ayat.id}
-                className="group relative rounded-[32px] border border-white/80 dark:border-slate-800 bg-white/60 dark:bg-slate-900/60 backdrop-blur-lg p-6 shadow-sm transition-all hover:shadow-md"
+                id={`ayat-${ayat.number}`}
+                className="group relative rounded-[32px] border border-white/80 dark:border-slate-800 bg-white/60 dark:bg-slate-900/60 backdrop-blur-lg p-6 shadow-sm transition-all hover:shadow-md scroll-mt-20"
               >
                 <div className="mb-6 flex items-center justify-between">
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-400/10 text-xs font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-400/20">

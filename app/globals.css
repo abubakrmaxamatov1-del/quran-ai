@@ -92,6 +92,16 @@ body[data-welcome-active='true'] .global-shell-bottomnav {
   -webkit-text-fill-color: transparent;
 }
 
+/* Remove default browser focus outlines globally */
+input, textarea, button, select {
+  outline: none !important;
+}
+
+input:focus, textarea:focus, button:focus, select:focus {
+  outline: none !important;
+  box-shadow: none;
+}
+
 .glass-effect {
   background: rgba(255, 255, 255, 0.4);
   backdrop-filter: blur(12px);
