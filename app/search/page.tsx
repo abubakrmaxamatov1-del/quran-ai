@@ -34,6 +34,8 @@ export default function SearchPage() {
   const [input, setInput] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [showCategoryMenu, setShowCategoryMenu] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<'quron' | 'hadis' | 'fiqh'>('quron');
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [searchHistoryQuery, setSearchHistoryQuery] = useState('');
   const [messages, setMessages] = useState<Message[]>([
@@ -328,11 +330,72 @@ export default function SearchPage() {
           >
             <ChevronLeft size={24} className="text-slate-700" />
           </button>
-          <div className="flex items-center gap-1.5 cursor-pointer hover:opacity-80 transition-opacity">
-            <h1 className="text-lg font-bold tracking-tight bg-gradient-to-b from-[#19e66b] to-black bg-clip-text text-transparent">
-              Ai Qidiruv - Quron
-            </h1>
+
+          {/* Category Selector */}
+          <div className="relative flex-1 flex justify-center">
+            <button
+              onClick={() => setShowCategoryMenu(!showCategoryMenu)}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl hover:bg-white/60 transition-all active:scale-95"
+            >
+              <h1 className="text-base font-bold tracking-tight text-emerald-700">
+                {selectedCategory === 'quron' ? "Qur'on qidiruvi" : selectedCategory === 'hadis' ? 'Hadislar' : 'Fiqhiy masalalar'}
+              </h1>
+              <span className="material-symbols-outlined text-[18px] text-emerald-600">
+                {showCategoryMenu ? 'expand_less' : 'expand_more'}
+              </span>
+            </button>
+
+            {/* Dropdown Menu */}
+            {showCategoryMenu && (
+              <>
+                <div 
+                  className="fixed inset-0 z-10" 
+                  onClick={() => setShowCategoryMenu(false)}
+                />
+                <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-20 animate-in fade-in slide-in-from-top-2 duration-200">
+                  {/* Quron - Active */}
+                  <button
+                    onClick={() => { setSelectedCategory('quron'); setShowCategoryMenu(false); }}
+                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-emerald-50 transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-[20px] text-emerald-600">menu_book</span>
+                    <div className="flex-1 text-left">
+                      <p className="text-sm font-bold text-slate-800">Qur'on</p>
+                      <p className="text-[10px] text-emerald-600 font-medium">Faol</p>
+                    </div>
+                    {selectedCategory === 'quron' && (
+                      <span className="material-symbols-outlined text-[18px] text-emerald-500">check_circle</span>
+                    )}
+                  </button>
+
+                  <div className="h-px bg-slate-100" />
+
+                  {/* Hadislar - Blocked */}
+                  <div className="w-full flex items-center gap-3 px-4 py-3 opacity-50 cursor-not-allowed select-none">
+                    <span className="material-symbols-outlined text-[20px] text-slate-400">auto_stories</span>
+                    <div className="flex-1 text-left">
+                      <p className="text-sm font-bold text-slate-500">Hadislar</p>
+                      <p className="text-[10px] text-slate-400 font-medium">Yaqinda qo'shiladi</p>
+                    </div>
+                    <span className="material-symbols-outlined text-[16px] text-slate-400">lock</span>
+                  </div>
+
+                  <div className="h-px bg-slate-100" />
+
+                  {/* Fiqhiy masalalar - Blocked */}
+                  <div className="w-full flex items-center gap-3 px-4 py-3 opacity-50 cursor-not-allowed select-none">
+                    <span className="material-symbols-outlined text-[20px] text-slate-400">gavel</span>
+                    <div className="flex-1 text-left">
+                      <p className="text-sm font-bold text-slate-500">Fiqhiy masalalar</p>
+                      <p className="text-[10px] text-slate-400 font-medium">Yaqinda qo'shiladi</p>
+                    </div>
+                    <span className="material-symbols-outlined text-[16px] text-slate-400">lock</span>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
+
           <div className="relative">
             <button 
               onClick={() => setShowHistory(true)}
@@ -356,7 +419,7 @@ export default function SearchPage() {
               {msg.role === 'user' ? 'Siz' : 'AI Assistant'}
             </span>
             
-            <div className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'} gap-2 max-w-[85%]`}>
+            <div className={`flex flex-col ${msg.role === 'user' ? 'items-end max-w-[80%]' : 'items-start max-w-[95%] w-full'} gap-2`}>
               <div className={`flex items-start gap-3 w-full ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
                 {/* Avatar */}
                 <div className="size-8 rounded-full overflow-hidden shrink-0 shadow-sm ring-1 ring-white/50 bg-white flex items-center justify-center">
@@ -391,7 +454,11 @@ export default function SearchPage() {
                       <span className="text-[10px] font-mono text-slate-400">{msg.duration}</span>
                     </div>
                   ) : (
-                    <div className={`text-sm leading-relaxed font-medium ${msg.role === 'assistant' ? 'bg-gradient-to-b from-[#19e66b] to-black bg-clip-text text-transparent' : 'text-slate-700 dark:text-slate-200'}`}>
+                    <div className={`text-sm leading-relaxed font-medium ${
+                      msg.role === 'assistant' 
+                        ? 'text-slate-800 dark:text-slate-100' 
+                        : 'text-slate-700 dark:text-slate-200'
+                    }`}>
                       <ReactMarkdown>{msg.content}</ReactMarkdown>
                     </div>
                   )}

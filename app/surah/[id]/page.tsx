@@ -105,7 +105,7 @@ export default function SurahPage({ params }: { params: Promise<{ id: string }> 
   return (
     <div className="min-h-screen bg-zinc-50 pb-20">
       {/* Unified Surah Header */}
-      <header className="sticky top-0 z-50 w-full bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border-b border-white/50 dark:border-slate-800/50 shadow-sm">
+      <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] z-50 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border-b border-white/50 dark:border-slate-800/50 shadow-sm">
         <div className="container mx-auto flex h-16 items-center justify-between px-4 max-w-[480px]">
           <Link 
             href="/" 
@@ -131,7 +131,7 @@ export default function SurahPage({ params }: { params: Promise<{ id: string }> 
         </div>
       </header>
 
-      <div className="container mx-auto mt-8 px-4 max-w-[480px]">
+      <div className="container mx-auto px-4 max-w-[480px] pt-24">
         {loading ? (
           <div className="space-y-6">
             {[...Array(5)].map((_, i) => (

@@ -20,13 +20,18 @@ export default function AuthCallbackPage() {
           return;
         }
 
-        const { error } = await supabase.auth.getSession();
-        if (error) {
-          setMessage('Sessiya yaratishda xatolik.');
+        // Wait a moment for Supabase to process the OAuth token from URL hash
+        await new Promise(resolve => setTimeout(resolve, 800));
+
+        const { data, error } = await supabase.auth.getSession();
+        if (error || !data.session) {
+          setMessage('Sessiya yaratishda xatolik. Qayta urinib ko\'ring.');
           setTimeout(() => router.replace('/'), 1400);
           return;
         }
 
+        // Mark as onboarded so HomePage shows surah list directly
+        sessionStorage.setItem('quran_onboarded', 'true');
         setMessage('Muvaffaqiyatli! Yo\'naltirilmoqda...');
         router.replace('/');
       } catch (e) {

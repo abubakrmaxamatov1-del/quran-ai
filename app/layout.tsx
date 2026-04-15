@@ -58,7 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="global-shell-header">
             <Header />
           </div>
-          <main className="relative z-10 flex-1 pb-32">
+          <main className="relative z-10 flex-1 pt-16 pb-32">
             {children}
           </main>
           <div className="global-shell-bottomnav">
