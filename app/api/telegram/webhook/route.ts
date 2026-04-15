@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const WEBAPP_URL =
@@ -10,6 +11,9 @@ const WEBAPP_URL =
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder_key';
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || '');
+const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
 export async function GET() {
   return NextResponse.json({
@@ -33,9 +37,66 @@ async function sendMessage(chatId: number, text: string, replyMarkup?: any) {
     body: JSON.stringify({
       chat_id: chatId,
       text: text,
+      parse_mode: 'MarkdownV2',
       ...(replyMarkup ? { reply_markup: replyMarkup } : {})
     }),
   });
+}
+
+// Helper to escape MarkdownV2 special characters
+function escapeMarkdown(text: string): string {
+  return text.replace(/[_*[\]()~`>#+\-=|{}.!]/g, '\\$&');
+}
+
+async function getVerseFromDB(sura: number, aya: number) {
+  const { data, error } = await supabase
+    .from('quran_mansour')
+    .select('arabic_text, translation')
+    .eq('sura_number', sura)
+    .eq('aya_number', aya)
+    .single();
+  
+  if (error || !data) return null;
+  return data;
+}
+
+function formatVerse(sura: number, aya: number, arabic: string, translation: string) {
+  // Use RLM (Right-to-Left Mark) \u200f for Arabic text
+  const rlm = "\u200f";
+  return `\n\n*${sura}\\-sura, ${aya}\\-oyat:*\n\n${rlm}\`${arabic}\`\n\n${escapeMarkdown(translation)}\n\n`;
+}
+
+async function generateAIResponse(userId: string, userMessage: string) {
+  const systemPrompt = `Siz "Muallim Abu Bakr" botining aqlli yordamchisisiz. 
+Siz foydalanuvchilarga Qur'on oyatlari, tafsir va islomiy savollar bo'yicha yordam berasiz.
+Agar foydalanuvchi ma'lum bir oyatni so'rasa yoki savolga javob berishda oyat kerak bo'lsa, uni quyidagi formatda keltiring: [GET_VERSE:sura:oyat]. 
+Masalan: Baqara surasi 255-oyat haqida so'rashsa, [GET_VERSE:2:255] deb javob ichida yozing.
+Javoblaringizni o'zbek tilida, muloyim va foydali ko'rinishda bering.`;
+
+  const result = await model.generateContent([systemPrompt, userMessage]);
+  let responseText = result.response.text();
+
+  // Escape the AI text BEFORE inserting pre-formatted verse blocks
+  responseText = escapeMarkdown(responseText);
+
+  // Find and replace verse tags with actual data from DB
+  const verseRegex = /\\\[GET\\_VERSE:(\d+):(\d+)\\\]/g; // Regex adjusted for escaped text
+  const matches = [...responseText.matchAll(verseRegex)];
+  
+  for (const match of matches) {
+    const sura = parseInt(match[1]);
+    const aya = parseInt(match[2]);
+    const verseData = await getVerseFromDB(sura, aya);
+    
+    if (verseData) {
+      const formattedVerse = formatVerse(sura, aya, verseData.arabic_text, verseData.translation);
+      responseText = responseText.replace(match[0], formattedVerse);
+    } else {
+      responseText = responseText.replace(match[0], `\n\n\\(Oyat topilmadi: ${sura}:${aya}\\)\n\n`);
+    }
+  }
+
+  return responseText;
 }
 
 export async function POST(req: Request) {
@@ -122,12 +183,12 @@ export async function POST(req: Request) {
         });
       }
     } else if (message.text) {
-      // Name submission
+      // Name submission or general chat
       if (user && user.full_name === '[PENDING_NAME]') {
         const name = message.text.trim();
         // Validation limits
         if (name.length < 2 || name.length > 50 || name.includes('http') || name.includes('/')) {
-          await sendMessage(chatId, "Iltimos, haqiqiy ismingizni kiriting (2-50 harf oralig'ida).");
+          await sendMessage(chatId, escapeMarkdown("Iltimos, haqiqiy ismingizni kiriting (2-50 harf oralig'ida)."));
           return NextResponse.json({ ok: true });
         }
         
@@ -137,11 +198,15 @@ export async function POST(req: Request) {
 
         if (nameError) throw new Error(`Name update failed: ${nameError.message}`);
 
-        await sendMessage(chatId, `Rahmat, ${name}!\nEndi telefon raqamingizni yuborish uchun pastdagi tugmani bosing:`, {
+        await sendMessage(chatId, `Rahmat, ${escapeMarkdown(name)}!\nEndi telefon raqamingizni yuborish uchun pastdagi tugmani bosing:`, {
           keyboard: [[{ text: "📱 Telefon raqamni yuborish", request_contact: true }]],
           resize_keyboard: true,
           one_time_keyboard: true
         });
+      } else {
+        // AI Chat
+        const aiResponse = await generateAIResponse(tgId.toString(), message.text);
+        await sendMessage(chatId, aiResponse);
       }
     }
 
