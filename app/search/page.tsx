@@ -216,19 +216,20 @@ export default function SearchPage() {
     }
   };
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
+  const handleSend = async (forcedQuery?: string) => {
+    const query = forcedQuery || input;
+    if (!query.trim()) return;
     
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: input,
+      content: query,
       type: 'text'
     };
     
     setMessages(prev => [...prev, userMessage]);
-    addToHistory(input);
-    const currentInput = input;
+    addToHistory(query);
+    const currentInput = query;
     setInput('');
     setIsAnalyzing(true);
     
@@ -301,6 +302,13 @@ export default function SearchPage() {
     } finally {
       setIsAnalyzing(false);
     }
+  };
+
+  const handleHistoryClick = (query: string) => {
+    // Optionally clear existing messages if we want to start a "new" chat
+    // setMessages([]); 
+    setShowHistory(false);
+    handleSend(query);
   };
 
   const filteredHistory = history.filter(item => 
@@ -564,7 +572,7 @@ export default function SearchPage() {
               {isRecording ? <X size={20} /> : <Mic size={20} />}
             </button>
             <button 
-              onClick={isRecording ? handleVoiceToggle : handleSend}
+              onClick={isRecording ? handleVoiceToggle : () => handleSend()}
               disabled={(!input.trim() && !isRecording) || isAnalyzing}
               className={`flex items-center justify-center size-10 rounded-full shadow-md transition-all shrink-0 ${
                 (input.trim() || isRecording) && !isAnalyzing
@@ -627,7 +635,11 @@ export default function SearchPage() {
               {filteredHistory.length > 0 ? (
                 <div className="space-y-4">
                   {filteredHistory.map((item) => (
-                    <div key={item.id} className="group flex items-center gap-4 p-3 rounded-2xl hover:bg-slate-50 transition-colors">
+                    <div 
+                      key={item.id} 
+                      onClick={() => handleHistoryClick(item.query)}
+                      className="group flex items-center gap-4 p-3 rounded-2xl hover:bg-slate-50 transition-all cursor-pointer active:scale-[0.98]"
+                    >
                       <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${
                         item.type === 'voice' ? 'bg-blue-50 text-blue-600' : 
                         item.type === 'image' ? 'bg-purple-50 text-purple-600' : 
@@ -642,7 +654,10 @@ export default function SearchPage() {
                         <p className="text-[10px] text-slate-400 font-medium">{item.timestamp}</p>
                       </div>
                       <button 
-                        onClick={() => deleteHistoryItem(item.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteHistoryItem(item.id);
+                        }}
                         className="h-8 w-8 flex items-center justify-center rounded-lg text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100"
                       >
                         <X size={16} />

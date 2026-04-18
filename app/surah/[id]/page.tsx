@@ -124,16 +124,16 @@ export default function SurahPage({ params }: { params: Promise<{ id: string }> 
     <div className="min-h-screen bg-zinc-50 pb-20">
       {/* Unified Surah Header */}
       <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] z-50 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border-b border-white/50 dark:border-slate-800/50 shadow-sm">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4 max-w-[480px]">
+        <div className="container mx-auto flex h-14 items-center justify-between px-4 max-w-[480px]">
           <Link 
             href="/" 
-            className="flex size-11 items-center justify-center bg-white/70 dark:bg-slate-800/70 backdrop-blur-md rounded-2xl border border-white/60 dark:border-slate-700/60 shadow-sm text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+            className="flex size-9 items-center justify-center bg-white/70 dark:bg-slate-800/70 backdrop-blur-md rounded-xl border border-white/60 dark:border-slate-700/60 shadow-sm text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
           >
-            <span className="material-symbols-outlined text-2xl">arrow_back</span>
+            <span className="material-symbols-outlined text-[20px]">arrow_back</span>
           </Link>
           
-          <div className="flex-1 ml-4 overflow-hidden">
-            <h1 className="text-lg font-bold leading-tight truncate text-emerald-gradient">
+          <div className="flex-1 ml-3 overflow-hidden">
+            <h1 className="text-base font-bold leading-tight truncate text-emerald-gradient">
               {surah?.englishName || 'Sura'}
             </h1>
             <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate">
@@ -142,14 +142,14 @@ export default function SurahPage({ params }: { params: Promise<{ id: string }> 
           </div>
 
           <div className="flex items-center justify-end">
-            <button className="flex size-11 cursor-pointer items-center justify-center overflow-hidden rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-md text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors border border-white/60 dark:border-slate-700/60 shadow-sm">
-              <span className="material-symbols-outlined text-2xl">share</span>
+            <button className="flex size-9 cursor-pointer items-center justify-center overflow-hidden rounded-xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-md text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors border border-white/60 dark:border-slate-700/60 shadow-sm">
+              <span className="material-symbols-outlined text-[20px]">share</span>
             </button>
           </div>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 max-w-[480px] pt-24">
+      <div className="container mx-auto px-4 max-w-[480px] pt-20">
         {loading ? (
           <div className="space-y-6">
             {[...Array(5)].map((_, i) => (
