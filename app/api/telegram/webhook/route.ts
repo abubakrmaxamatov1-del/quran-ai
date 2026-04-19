@@ -15,6 +15,32 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || '');
 const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
+// Add helper to download voice file
+async function downloadTelegramFile(fileId: string): Promise<{ buffer: ArrayBuffer, mimeType: string } | null> {
+  try {
+    const getFileResponse = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getFile?file_id=${fileId}`);
+    const fileData = await getFileResponse.json();
+    
+    if (!fileData.ok) return null;
+    
+    const filePath = fileData.result.file_path;
+    const fileUrl = `https://api.telegram.org/file/bot${BOT_TOKEN}/${filePath}`;
+    
+    const response = await fetch(fileUrl);
+    const buffer = await response.arrayBuffer();
+    
+    // Determine mime type from file path extension if possible, or fallback
+    let mimeType = 'audio/ogg';
+    if (filePath.endsWith('.mp3')) mimeType = 'audio/mp3';
+    else if (filePath.endsWith('.m4a')) mimeType = 'audio/mp4';
+    
+    return { buffer, mimeType };
+  } catch (error) {
+    console.error('Error downloading Telegram file:', error);
+    return null;
+  }
+}
+
 export async function GET() {
   const { data: dbCheck, error: dbError } = await supabase.from('surahs').select('count', { count: 'exact', head: true }).limit(1);
   
@@ -117,6 +143,67 @@ Sizning vazifangiz - mustaqil olim bo'lish emas, balki foydalanuvchini bazadagi 
   }
 
   return responseText;
+}
+
+async function processVoiceRecitation(chatId: number, voice: any) {
+  const fileId = voice.file_id;
+  
+  // Inform user that we are processing
+  await sendMessage(chatId, "Ovozingiz tahlil qilinmoqda, iltimos kuting... ⏳");
+  
+  const file = await downloadTelegramFile(fileId);
+  if (!file) {
+    await sendMessage(chatId, "Kechirasiz, ovozli xabarni yuklab olishda xatolik yuz berdi.");
+    return;
+  }
+
+  try {
+    const prompt = `Ushbu audio faylda Qur'on surasi va oyati qiroat qilingan. 
+Iltimos, qaysi sura va oyat o'qilganini aniqlang va javobni FAQAT quyidagi formatda bering:
+[SURA_NUMBER]:[AYAH_NUMBER]
+
+Masalan, agar Baqara surasining 255-oyati bo'lsa: 2:255 deb javob bering.
+Agar qaysi oyat ekanligini aniqlay olmasangiz, faqat "NOT_FOUND" deb yozing.`;
+
+    const result = await model.generateContent([
+      prompt,
+      {
+        inlineData: {
+          data: Buffer.from(file.buffer).toString('base64'),
+          mimeType: file.mimeType
+        }
+      }
+    ]);
+
+    const identification = result.response.text().trim();
+    console.log(`[Voice Recognition] Result: ${identification}`);
+
+    if (identification === "NOT_FOUND" || !identification.includes(':')) {
+      await sendMessage(chatId, "Kechirasiz, ushbu qiroatni aniqlay olmadim. Iltimos, aniqroq o'qib qayta yuboring.");
+      return;
+    }
+
+    const [suraStr, ayaStr] = identification.split(':');
+    const sura = parseInt(suraStr.replace(/[^0-9]/g, ''));
+    const aya = parseInt(ayaStr.replace(/[^0-9]/g, ''));
+
+    if (isNaN(sura) || isNaN(aya)) {
+      await sendMessage(chatId, "Kechirasiz, qaysi oyat ekanligini tushuna olmadim.");
+      return;
+    }
+
+    const verseData = await getVerseFromDB(sura, aya);
+    if (verseData) {
+      const formattedVerse = formatVerse(sura, aya, verseData.arabic_text, verseData.translation, verseData.footnotes);
+      await sendMessage(chatId, `O'qilgan oyat aniqlandi! ✨\n${formattedVerse}`);
+    } else {
+      await sendMessage(chatId, `O'qilgan oyat aniqlandi (${sura}-sura, ${aya}-oyat), lekin bizning bazada bu oyat haqida ma'lumot topilmadi.`);
+    }
+
+  } catch (error) {
+    console.error('Error processing voice with Gemini:', error);
+    await sendMessage(chatId, "Ovozni tahlil qilishda xatolik yuz berdi. Iltimos, keyinroq qayta urinib ko'ring.");
+  }
 }
 
 export async function POST(req: Request) {
@@ -235,6 +322,8 @@ export async function POST(req: Request) {
         const aiResponse = await generateAIResponse(tgId.toString(), message.text);
         await sendMessage(chatId, aiResponse);
       }
+    } else if (message.voice) {
+      await processVoiceRecitation(chatId, message.voice);
     }
 
     return NextResponse.json({ ok: true });

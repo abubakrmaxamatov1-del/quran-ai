@@ -139,6 +139,8 @@ export default function SearchPage() {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -158,34 +160,103 @@ export default function SearchPage() {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const handleVoiceToggle = () => {
+  const handleVoiceToggle = async () => {
     if (isRecording) {
-      // Stop recording and send
-      const voiceMessage: Message = {
-        id: Date.now().toString(),
-        role: 'user',
-        content: 'Ovozli xabar',
-        type: 'audio',
-        duration: formatTime(recordingTime)
-      };
-      setMessages(prev => [...prev, voiceMessage]);
-      addToHistory('Ovozli xabar', 'voice');
+      // Stop recording
+      if (mediaRecorderRef.current) {
+        mediaRecorderRef.current.stop();
+      }
       setIsRecording(false);
+    } else {
+      // Start recording
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const mediaRecorder = new MediaRecorder(stream);
+        mediaRecorderRef.current = mediaRecorder;
+        audioChunksRef.current = [];
+
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            audioChunksRef.current.push(event.data);
+          }
+        };
+
+        mediaRecorder.onstop = async () => {
+          const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+          
+          // Add user message to chat
+          const voiceMessage: Message = {
+            id: Date.now().toString(),
+            role: 'user',
+            content: 'Ovozli xabar yuborildi',
+            type: 'audio',
+            duration: formatTime(recordingTime)
+          };
+          setMessages(prev => [...prev, voiceMessage]);
+          addToHistory('Ovozli qiroat', 'voice');
+
+          // Send to API
+          await sendAudioToAPI(audioBlob);
+          
+          // Stop track to release microphone
+          stream.getTracks().forEach(track => track.stop());
+        };
+
+        mediaRecorder.start();
+        setIsRecording(true);
+      } catch (err) {
+        console.error("Microphone access denied:", err);
+        alert("Mikrofondan foydalanishga ruxsat berilmadi. Iltimos, brauzer sozlamalarini tekshiring.");
+      }
+    }
+  };
+
+  const sendAudioToAPI = async (blob: Blob) => {
+    setIsAnalyzing(true);
+    try {
+      const formData = new FormData();
+      formData.append('audio', blob, 'recording.webm');
+
+      const response = await fetch('/api/voice-search', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
       
-      // Simulate AI response for voice
-      setIsAnalyzing(true);
-      setTimeout(() => {
+      if (result.success && result.found) {
         const assistantMessage: Message = {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content: "Ovozli xabaringiz qabul qilindi. Siz yuborgan ovozli xabarda Baqara surasining 2-oyati keltirilgan.",
+          content: `O'qilgan oyat aniqlandi! ✨\n\n**${result.sura}-sura, ${result.aya}-oyat:**\n\n\`${result.arabic}\`\n\n**Ma'nosi:** ${result.translation}`,
+          type: 'text',
+          link: {
+            surahId: result.sura,
+            verseId: result.aya,
+            label: `${result.sura}-sura, ${result.aya}-oyatga o'tish`
+          }
+        };
+        setMessages(prev => [...prev, assistantMessage]);
+      } else {
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: result.message || "Kechirasiz, ushbu qiroatni aniqlay olmadim. Iltimos, aniqroq o'qib qayta urinib ko'ring.",
           type: 'text'
         };
         setMessages(prev => [...prev, assistantMessage]);
-        setIsAnalyzing(false);
-      }, 2000);
-    } else {
-      setIsRecording(true);
+      }
+    } catch (error) {
+      console.error("Error sending audio:", error);
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: "Ovozni tahlil qilishda xatolik yuz berdi. Iltimos, internet aloqasini tekshiring.",
+        type: 'text'
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
